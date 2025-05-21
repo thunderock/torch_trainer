@@ -1,10 +1,10 @@
 [tool.poetry]
 name = "torch_trainer"
 version = "0.1"
-description = "Yale/UNC-CH - Geophysical Waveform Inversion"
+description = "Training torch models on scale"
 authors = ["Ashutosh Tiwari <findashutoshtiwari@gmail.com>"]
 readme = "README.md"
-packages = [{include = "gwi"}]
+packages = [{include = "torch_trainer"}]
 classifiers = [
     "Environment :: GPU :: NVIDIA CUDA",
     "Intended Audience :: Science/Research",

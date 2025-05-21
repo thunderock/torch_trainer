@@ -1,10 +1,6 @@
 CUR_DIR := ${CURDIR}
 OS := $(shell uname)
 CORES ?= all
-DATA_PATH ?= data
-SCRIPT_PATH ?= gwi/scripts
-KFOLD ?= 2
-TRIALS ?= 1
 
 .PHONY: clean_snakemake
 clean_snakemake:
