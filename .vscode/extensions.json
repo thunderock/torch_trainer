@@ -1,0 +1,15 @@
+{
+    "recommendations": [
+        "ms-python.python",
+        "ms-python.black-formatter",
+        "charliermarsh.ruff",
+        "ms-python.mypy-type-checker",
+        "eamodio.gitlens",
+        "ms-vscode.makefile-tools",
+        "ms-python.isort",
+        "ms-toolsai.jupyter",
+	    "snakemake.snakemake-lang",
+	    "tfehlmann.snakefmt",
+        "tomoki1207.pdf",
+    ]
+}

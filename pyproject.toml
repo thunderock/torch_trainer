@@ -1,0 +1,65 @@
+[tool.poetry]
+name = "torch_trainer"
+version = "0.1"
+description = "Yale/UNC-CH - Geophysical Waveform Inversion"
+authors = ["Ashutosh Tiwari <findashutoshtiwari@gmail.com>"]
+readme = "README.md"
+packages = [{include = "gwi"}]
+classifiers = [
+    "Environment :: GPU :: NVIDIA CUDA",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+
+[tool.poetry.dependencies]
+python = "3.11.12"
+seaborn = "^0.13.0"
+numpy = "1.24.3"
+scikit-learn = "1.3.0"
+kaggle = "*"
+ipython = "*"
+joblib = "^1.3.2"
+psutil = "^5.9.5"
+wandb = "^0.15.12"
+pyarrow = "^13.0.0"
+nvitop = "^1.3.1"
+urllib3 = "1.26.11"
+ipywidgets = "^8.1.1"
+pickleshare = "^0.7.5"
+torch = "^2.1.2"
+torchaudio = "^2.1.2"
+torchvision = "^0.16.2"
+pytorch-lightning = "^2.1.3"
+transformers = "^4.37.2"
+datasets = "^2.17.1"
+evaluate = "^0.4.1"
+accelerate = "^0.27.2"
+catboost = "^1.2.7"
+xgboost = "^2.1.1"
+snakemake = "^8.24.0"
+isort = "^5.13.2"
+ruff = "^0.7.0"
+mypy = "^1.12.1"
+black = "^24.10.0"
+traitlets = "5.9.0"
+traittypes = "0.2.1"
+notebook = "6.4.12"
+optuna = "^4.0.0"
+statsmodels = "^0.14.4"
+lightgbm = "^4.5.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+
+# changes to probably improve this further
+# 1. remove wide model weight
+# 2. Do smoe feature engineering : added some new features
+# 3. need to filter out some features depending on correlation
+# 4. Add lstm and vae features for time series component
