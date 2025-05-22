@@ -43,11 +43,19 @@ WRAPPER_SCRIPT="wrapper.sh"
 cat > "${WRAPPER_SCRIPT}" << EOF
 #!/bin/bash
 set -x
+
+# Set environment variables for distributed training
+export OMP_NUM_THREADS=1
+export MKL_NUM_THREADS=1
+export NCCL_DEBUG=INFO
+export NCCL_IB_DISABLE=0
+export NCCL_SOCKET_IFNAME=eth0
+
 # Export variables for cluster configuration
 export NUM_NODES=$NUM_NODES
 export NUM_CPU_WORKERS_PER_NODE=$NUM_CPU_WORKERS_PER_NODE
 export NUM_GPU_WORKERS_PER_NODE=$NUM_GPU_WORKERS_PER_NODE
-export NUM_GPUS_PER_NODE=$NUM_GPUS_PER_NODE
+export NUM_GPUS_PER_NODE=$NUM_GPU_WORKERS_PER_NODE
 
 echo NODE_RANK=\${RANK}
 
