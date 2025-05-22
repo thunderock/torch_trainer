@@ -69,9 +69,6 @@ cd torch_trainer
 sudo apt-get update
 sudo apt-get install -y build-essential libssl-dev libbz2-dev libffi-dev liblzma-dev libncurses5-dev libreadline-dev libsqlite3-dev libtk8.6 libgdbm-dev uuid-dev
 
-curl -sSL https://install.python-poetry.org | python3 -
-export PATH="/home/colligo/.local/bin:\$PATH"
-
 # Install and configure pyenv
 curl https://pyenv.run | bash
 export PYENV_ROOT="\$HOME/.pyenv"
@@ -82,6 +79,10 @@ eval "\$(pyenv virtualenv-init -)"
 # Now install and use Python
 pyenv install 3.10.12
 pyenv global 3.10.12
+
+# Install poetry
+curl -sSL https://install.python-poetry.org | python3 -
+export PATH="/home/colligo/.local/bin:\$PATH"
 
 make setup
 
