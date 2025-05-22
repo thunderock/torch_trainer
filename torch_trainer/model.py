@@ -110,7 +110,6 @@ def train_model(
         accelerator=accelerator,
         logger=logger,
         callbacks=[
-            pl.callbacks.EarlyStopping(monitor="val_loss", patience=5, mode="min"),
             pl.callbacks.ModelCheckpoint(
                 monitor="val_loss",
                 mode="min",
