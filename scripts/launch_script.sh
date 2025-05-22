@@ -8,6 +8,7 @@ PLUTO_PROJECT="GPU-125-mldp-img-data-enrichment"
 NUM_NODES=2
 NUM_CPU_WORKERS_PER_NODE=8
 NUM_GPU_WORKERS_PER_NODE=8
+JOB_NAME="torch_trainer"
 IMAGE=docker-matrix-experiments-snapshot.dr-uw2.adobeitc.com/colligo/colligo-dev:v42
 OUT_DIR="/mnt/localssd/colligo"
 
@@ -45,11 +46,33 @@ export NUM_GPU_WORKERS_PER_NODE=$NUM_GPU_WORKERS_PER_NODE
 
 echo NODE_RANK=\${RANK}
 
-git clone git@github.com:thunderock/torch_trainer.git
+cd ~
+# how much space does it have?
+df -h /
+GIT_SSH_COMMAND="ssh -i /sensei-fs/users/astiwari/.ssh/id_rsa -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git clone git@github.com:thunderock/torch_trainer.git
 cd torch_trainer
+
+# Install required system libraries
+sudo apt-get update
+sudo apt-get install -y build-essential libssl-dev libbz2-dev libffi-dev liblzma-dev libncurses5-dev libreadline-dev libsqlite3-dev libtk8.6 libgdbm-dev uuid-dev
+
+curl -sSL https://install.python-poetry.org | python3 -
+export PATH="/home/colligo/.local/bin:\$PATH"
+
+# Install and configure pyenv
+curl https://pyenv.run | bash
+export PYENV_ROOT="\$HOME/.pyenv"
+[[ -d \$PYENV_ROOT/bin ]] && export PATH="\$PYENV_ROOT/bin:\$PATH"
+eval "\$(pyenv init - bash)"
+eval "\$(pyenv virtualenv-init -)"
+
+# Now install and use Python
+pyenv install 3.10.12
+pyenv global 3.10.12
+
 make setup
 
-torchrun --nproc_per_node=8 --nnodes=${NUM_NODES} --node_rank=\${RANK} --master_addr=\${MASTER_ADDR} --master_port=29500 torch_trainer/model.py --num_nodes=${NUM_NODES} --gpus_per_node=${NUM_GPU_WORKERS_PER_NODE} --batch_size=32
+poetry run torchrun --nproc_per_node=8 --nnodes=${NUM_NODES} --node_rank=\${RANK} --master_addr=\${MASTER_ADDR} --master_port=29500 torch_trainer/model.py --num_nodes=${NUM_NODES} --gpus_per_node=${NUM_GPU_WORKERS_PER_NODE} --batch_size=32 --max_epochs=10000
 
 EOF
 
