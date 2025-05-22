@@ -2,12 +2,16 @@
 # set -e
 set -x
 
+# Source .bashrc to get access to the submit_training_job function
+source ~/.bashrc
+
 # Default values
 GIT_SHA=`git rev-parse --short=8 HEAD`
 PLUTO_PROJECT="GPU-125-mldp-img-data-enrichment"
 NUM_NODES=2
 NUM_CPU_WORKERS_PER_NODE=8
 NUM_GPU_WORKERS_PER_NODE=8
+NUM_GPUS_PER_NODE=$NUM_GPU_WORKERS_PER_NODE  # Set this explicitly
 JOB_NAME="torch_trainer"
 IMAGE=docker-matrix-experiments-snapshot.dr-uw2.adobeitc.com/colligo/colligo-dev:v42
 OUT_DIR="/mnt/localssd/colligo"
@@ -43,7 +47,7 @@ set -x
 export NUM_NODES=$NUM_NODES
 export NUM_CPU_WORKERS_PER_NODE=$NUM_CPU_WORKERS_PER_NODE
 export NUM_GPU_WORKERS_PER_NODE=$NUM_GPU_WORKERS_PER_NODE
-export POETRY_INSTALLER_MAX_WORKERS=5
+export NUM_GPUS_PER_NODE=$NUM_GPUS_PER_NODE
 
 echo NODE_RANK=\${RANK}
 
@@ -73,7 +77,7 @@ pyenv global 3.10.12
 
 make setup
 
-poetry run torchrun --nproc_per_node=8 --nnodes=${NUM_NODES} --node_rank=\${RANK} --master_addr=\${MASTER_ADDR} --master_port=29500 torch_trainer/model.py --num_nodes=${NUM_NODES} --gpus_per_node=${NUM_GPU_WORKERS_PER_NODE} --batch_size=32 --max_epochs=10000
+poetry run torchrun --nproc_per_node=8 --nnodes=${NUM_GPU_WORKERS_PER_NODE} --node_rank=\${RANK} --master_addr=\${MASTER_ADDR} --master_port=29500 torch_trainer/model.py --num_nodes=${NUM_NODES} --gpus_per_node=${NUM_GPUS_PER_NODE} --batch_size=32 --max_epochs=10000
 
 EOF
 
@@ -81,16 +85,7 @@ EOF
 chmod +x "${WRAPPER_SCRIPT}"
 
 # Submit the job to Pluto
-python3 -m colligo.pluto.sdk.cli job create \
-    --job-type "training" \
-    --name "${JOB_NAME}" \
-    --image "${IMAGE}" \
-    --project "${PLUTO_PROJECT}" \
-    --accelerator-type NVIDIA_A100_80GB \
-    --xpus-per-pod ${NUM_GPU_WORKERS_PER_NODE} \
-    --num-pods ${NUM_NODES} \
-    --start \
-    --main-script "${WRAPPER_SCRIPT}"
+submit_training_job "${WRAPPER_SCRIPT}" "${NUM_NODES}" "${JOB_NAME}" "${IMAGE}" "${PLUTO_PROJECT}" "${NUM_GPU_WORKERS_PER_NODE}"
 
 # Clean up the wrapper script
 rm "${WRAPPER_SCRIPT}"

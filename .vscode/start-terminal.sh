@@ -10,6 +10,11 @@ if test -f ~/.bash_profile; then
     source ~/.bash_profile
 fi
 
+if test -f ~/.bashrc; then
+    echo "Running ~/.bashrc"
+    source ~/.bashrc
+fi
+
 if test -f "$ENV_FILE"; then
     echo "Exporting env vars in $ENV_FILE"
     set -o allexport
