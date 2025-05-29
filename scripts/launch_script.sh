@@ -67,7 +67,7 @@ cd torch_trainer
 
 # Install required system libraries
 sudo apt-get update
-sudo apt-get install -y build-essential libssl-dev libbz2-dev libffi-dev liblzma-dev libncurses5-dev libreadline-dev libsqlite3-dev libtk8.6 libgdbm-dev uuid-dev
+sudo apt-get install -y build-essential libssl-dev libbz2-dev libffi-dev liblzma-dev libncurses5-dev libreadline-dev libsqlite3-dev libtk8.6 libgdbm-dev uuid-dev libffi-dev
 
 # Install and configure pyenv
 curl https://pyenv.run | bash
