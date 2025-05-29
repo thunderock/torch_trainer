@@ -3,12 +3,26 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import pytorch_lightning as pl
-from torch.utils.data import DataLoader, Dataset, TensorDataset
-from typing import Optional, Dict, Any
+from torch.utils.data import DataLoader, Dataset
+from typing import Optional
+import logging
 
-# # Set environment variables for distributed training
-# os.environ["OMP_NUM_THREADS"] = "1"
-# os.environ["MKL_NUM_THREADS"] = "1"
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Set environment variables for distributed training
+os.environ["OMP_NUM_THREADS"] = "1"
+os.environ["MKL_NUM_THREADS"] = "1"
+
+# Log rank information
+if "RANK" in os.environ:
+    rank = int(os.environ["RANK"])
+    world_size = int(os.environ["WORLD_SIZE"])
+    local_rank = int(os.environ.get("LOCAL_RANK", 0))
+    logger.info(
+        f"Process initialized - Global Rank: {rank}, World Size: {world_size}, Local Rank: {local_rank}"
+    )
 
 
 class SyntheticDataset(Dataset):
@@ -61,6 +75,14 @@ class ExampleModel(pl.LightningModule):
         y_hat = self(x)
         loss = F.mse_loss(y_hat, y)
         self.log("train_loss", loss, prog_bar=True)
+
+        # Log rank and batch information
+        if "RANK" in os.environ:
+            rank = int(os.environ["RANK"])
+            logging.getLogger(__name__).info(
+                f"Global Rank {rank} processing batch {batch_idx}"
+            )
+
         return loss
 
     def validation_step(self, batch, batch_idx):
@@ -68,6 +90,14 @@ class ExampleModel(pl.LightningModule):
         y_hat = self(x)
         loss = F.mse_loss(y_hat, y)
         self.log("val_loss", loss, prog_bar=True)
+
+        # Log rank and batch information
+        if "RANK" in os.environ:
+            rank = int(os.environ["RANK"])
+            logging.getLogger(__name__).info(
+                f"Global Rank {rank} validating batch {batch_idx}"
+            )
+
         return loss
 
     def configure_optimizers(self):
