@@ -86,7 +86,7 @@ export PATH="/home/colligo/.local/bin:\$PATH"
 
 make setup
 
-poetry run torchrun --nproc_per_node=8 --nnodes=${NUM_GPU_WORKERS_PER_NODE} --node_rank=\${RANK} --master_addr=\${MASTER_ADDR} --master_port=29500 torch_trainer/model.py --num_nodes=${NUM_NODES} --gpus_per_node=${NUM_GPUS_PER_NODE} --batch_size=32 --max_epochs=10000
+poetry run torchrun --nproc_per_node=${NUM_GPU_WORKERS_PER_NODE} --nnodes=${NUM_NODES} --node_rank=\${RANK} --master_addr=\${MASTER_ADDR} --master_port=29500 torch_trainer/model.py --num_nodes=${NUM_NODES} --gpus_per_node=${NUM_GPU_WORKERS_PER_NODE} --batch_size=32 --max_epochs=10000
 
 EOF
 

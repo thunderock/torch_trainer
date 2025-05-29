@@ -5,12 +5,10 @@ import torch.nn.functional as F
 import pytorch_lightning as pl
 from torch.utils.data import DataLoader, Dataset, TensorDataset
 from typing import Optional, Dict, Any
-import numpy as np
-import torch.distributed as dist
 
-# Set environment variables for distributed training
-os.environ["OMP_NUM_THREADS"] = "1"
-os.environ["MKL_NUM_THREADS"] = "1"
+# # Set environment variables for distributed training
+# os.environ["OMP_NUM_THREADS"] = "1"
+# os.environ["MKL_NUM_THREADS"] = "1"
 
 
 class SyntheticDataset(Dataset):
@@ -91,14 +89,31 @@ def train_model(
     """
     Train a PyTorch Lightning model across multiple nodes with multiple GPUs.
     """
-    # Configure distributed training
-    if strategy == "ddp":
-        if "RANK" in os.environ:
-            rank = int(os.environ["RANK"])
-            world_size = int(os.environ["WORLD_SIZE"])
-            dist.init_process_group(
-                backend="nccl", init_method="env://", world_size=world_size, rank=rank
-            )
+    # # Configure distributed training
+    # if strategy == "ddp":
+    #     if "RANK" in os.environ:
+    #         rank = int(os.environ["RANK"])
+    #         world_size = int(os.environ["WORLD_SIZE"])
+    #         local_rank = int(os.environ.get("LOCAL_RANK", 0))
+
+    #         # Set device for this process
+    #         torch.cuda.set_device(local_rank)
+
+    #         # Initialize process group with timeout
+    #         try:
+    #             dist.init_process_group(
+    #                 backend="nccl",
+    #                 init_method="env://",
+    #                 world_size=world_size,
+    #                 rank=rank,
+    #                 timeout=timedelta(seconds=300),  # 5 minute timeout
+    #             )
+    #             print(
+    #                 f"Initialized process group: rank={rank}, world_size={world_size}, local_rank={local_rank}"
+    #             )
+    #         except Exception as e:
+    #             print(f"Failed to initialize process group: {e}")
+    #             raise
 
     trainer = pl.Trainer(
         max_epochs=max_epochs,
@@ -183,9 +198,9 @@ if __name__ == "__main__":
     parser.add_argument("--max_epochs", type=int, default=100)
     args = parser.parse_args()
 
-    # Set up distributed environment
-    if "RANK" in os.environ:
-        torch.cuda.set_device(int(os.environ.get("LOCAL_RANK", 0)))
+    # # Set up distributed environment
+    # if "RANK" in os.environ:
+    #     torch.cuda.set_device(int(os.environ.get("LOCAL_RANK", 0)))
 
     # Create model
     model = ExampleModel(
@@ -199,7 +214,6 @@ if __name__ == "__main__":
         batch_size=args.batch_size,
         input_dim=args.input_dim,
         output_dim=args.output_dim,
-        num_workers=4,  # Reduced number of workers to avoid OMP issues
     )
 
     logger = pl.loggers.CSVLogger(
